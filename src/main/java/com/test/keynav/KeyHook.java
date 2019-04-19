@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * Sample implementation of a low-level keyboard hook on W32.
  */
+@Deprecated
 public class KeyHook {
     private static HHOOK hhk;
     private static LowLevelKeyboardProc keyboardHook;
