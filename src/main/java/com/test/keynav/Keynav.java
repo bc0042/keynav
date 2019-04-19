@@ -17,13 +17,12 @@ import java.awt.*;
 import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedList;
 
 /**
  * Sample implementation of a low-level keyboard hook on W32.
  */
 public class Keynav {
-    private static int scale = 1;
-    private static boolean ctrlDown = false;
     private static int ctrl = 162; // ctrl
     private static int esc = 27; // esc
     private static int enter = 13; // enter
@@ -41,13 +40,18 @@ public class Keynav {
     private static int down = 74; // j
     private static int up = 75; // k
     private static int right = 76; // l
+    private static int back = 90; // z
+    private static int forward = 88; // x
 
+    private static int scale = 1;
+    private static int historyMax = 99;
+    private static boolean ctrlDown = false;
     private static HHOOK hhk;
     private static LowLevelKeyboardProc keyboardHook;
     private static Robot robot;
     private static JFrame jFrame = new JFrame();
     private static List<Point> savePoints = new ArrayList<>();
-
+	private static LinkedList<Point> history = new LinkedList<>();
 
 
     public static void main(String[] args) throws AWTException {
@@ -100,7 +104,6 @@ public class Keynav {
     }
 
     private static void keyDown(int vkCode) {
-        System.out.println(ctrlDown);
         boolean keyMode = jFrame.isVisible();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Point p = MouseInfo.getPointerInfo().getLocation();
@@ -175,27 +178,32 @@ public class Keynav {
             return;
         }
 
-
+		// upperLeft upperRight lowerLeft lowerRight
         if (keyMode && upperLeft == vkCode) {
             robot.mouseMove(p.x - scaleX / 2, p.y - scaleY / 2);
+			addHistory(p);
             scale *= 2;
             return;
         }
         if (keyMode && upperRight == vkCode) {
             robot.mouseMove(p.x + scaleX / 2, p.y - scaleY / 2);
+			addHistory(p);
             scale *= 2;
             return;
         }
         if (keyMode && lowerLeft == vkCode) {
             robot.mouseMove(p.x - scaleX / 2, p.y + scaleY / 2);
+			addHistory(p);
             scale *= 2;
             return;
         }
         if (keyMode && lowerRight == vkCode) {
             robot.mouseMove(p.x + scaleX / 2, p.y + scaleY / 2);
+			addHistory(p);
             scale *= 2;
             return;
         }
+		// ctrl + left down up right
         if (keyMode && ctrlDown && left == vkCode) {
             robot.mouseMove(p.x - scaleX / 2, p.y);
             return;
@@ -212,29 +220,51 @@ public class Keynav {
             robot.mouseMove(p.x + scaleX / 2, p.y);
             return;
         }
+		// left down up right
         if (keyMode && left == vkCode) {
             robot.mouseMove(p.x - scaleX / 2, p.y);
+			addHistory(p);
             scale *= 2;
             return;
         }
         if (keyMode && down == vkCode) {
             robot.mouseMove(p.x, p.y + scaleY / 2);
+			addHistory(p);
             scale *= 2;
             return;
         }
         if (keyMode && up == vkCode) {
             robot.mouseMove(p.x, p.y - scaleY / 2);
+			addHistory(p);
             scale *= 2;
             return;
         }
         if (keyMode && right == vkCode) {
             robot.mouseMove(p.x + scaleX / 2, p.y);
+			addHistory(p);
             scale *= 2;
             return;
         }
-
+		// move back
+		if (keyMode && ctrlDown && back == vkCode) {
+			Point last = history.removeLast();
+			history.addFirst(last);
+			robot.mouseMove(last.x, last.y);
+		}
+		// move forward
+		if (keyMode && ctrlDown && forward == vkCode) {
+			Point first = history.removeFirst();
+			history.add(first);
+			robot.mouseMove(first.x, first.y);
+		}
 
     }
 
+	private static void addHistory(Point p){
+		if (history.size() >= historyMax) {
+			history.removeFirst();
+		}
+		history.add(p);
+	}
 
 }
