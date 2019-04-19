@@ -154,17 +154,23 @@ public class Keynav {
         }
         if (keyMode && Config.equal("key1", vkCode)) { // restore1
             Point point = savePoints[0];
-            robot.mouseMove(point.x, point.y);
+            if (point != null) {
+                robot.mouseMove(point.x, point.y);
+            }
             return;
         }
         if (keyMode && Config.equal("key2", vkCode)) { // restore2
             Point point = savePoints[0];
-            robot.mouseMove(point.x, point.y);
+            if (point != null) {
+                robot.mouseMove(point.x, point.y);
+            }
             return;
         }
         if (keyMode && Config.equal("key3", vkCode)) { // restore3
             Point point = savePoints[0];
-            robot.mouseMove(point.x, point.y);
+            if (point != null) {
+                robot.mouseMove(point.x, point.y);
+            }
             return;
         }
 
