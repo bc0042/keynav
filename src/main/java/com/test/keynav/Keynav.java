@@ -27,7 +27,7 @@ public class Keynav {
     private static Robot robot;
     private static MyPanel myPanel;
     private static JFrame jFrame = new JFrame();
-    private static List<Point> savePoints = new ArrayList<>();
+    private static Point[] savePoints = new Point[3];
     private static LinkedList<Point> history = new LinkedList<>();
     private static int scale;
 
@@ -138,39 +138,33 @@ public class Keynav {
             return;
         }
         if (keyMode && ctrlDown && Config.equal("key1", vkCode)) { // save1
-            savePoints.add(p);
+            savePoints[0] = p;
             System.out.println("key1..");
             return;
         }
         if (keyMode && ctrlDown && Config.equal("key2", vkCode)) { // save2
-            savePoints.add(p);
+            savePoints[1] = p;
             System.out.println("key2..");
             return;
         }
         if (keyMode && ctrlDown && Config.equal("key3", vkCode)) { // save3
-            savePoints.add(p);
+            savePoints[2] = p;
             System.out.println("key3..");
             return;
         }
         if (keyMode && Config.equal("key1", vkCode)) { // restore1
-            if (savePoints.size() >= 1) {
-                Point point = savePoints.get(0);
-                robot.mouseMove(point.x, point.y);
-            }
+            Point point = savePoints[0];
+            robot.mouseMove(point.x, point.y);
             return;
         }
         if (keyMode && Config.equal("key2", vkCode)) { // restore2
-            if (savePoints.size() >= 2) {
-                Point point = savePoints.get(1);
-                robot.mouseMove(point.x, point.y);
-            }
+            Point point = savePoints[0];
+            robot.mouseMove(point.x, point.y);
             return;
         }
         if (keyMode && Config.equal("key3", vkCode)) { // restore3
-            if (savePoints.size() >= 3) {
-                Point point = savePoints.get(2);
-                robot.mouseMove(point.x, point.y);
-            }
+            Point point = savePoints[0];
+            robot.mouseMove(point.x, point.y);
             return;
         }
 
