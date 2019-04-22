@@ -128,14 +128,14 @@ public class KeynavBak {
         }
         if (ctrlDown && begin == vkCode) {
             robot.mouseMove(screenSize.width / 2, screenSize.height / 2);
-            myPanel.paint(1);
+            myPanel.paint(1, false);
             jFrame.setVisible(true);
             scale = 2;
             System.out.println("key mode on..");
             return;
         }
         if (ctrlDown && begin2 == vkCode) {
-            myPanel.paint(8);
+            myPanel.paint(8, false);
             jFrame.setVisible(true);
             scale = 16;
             System.out.println("key mode on.. scale=16");
@@ -201,28 +201,28 @@ public class KeynavBak {
         // upperLeft upperRight lowerLeft lowerRight
         if (keyMode && upperLeft == vkCode) {
             robot.mouseMove(p.x - scaleX / 2, p.y - scaleY / 2);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             addHistory();
             scale *= 2;
             return;
         }
         if (keyMode && upperRight == vkCode) {
             robot.mouseMove(p.x + scaleX / 2, p.y - scaleY / 2);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             addHistory();
             scale *= 2;
             return;
         }
         if (keyMode && lowerLeft == vkCode) {
             robot.mouseMove(p.x - scaleX / 2, p.y + scaleY / 2);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             addHistory();
             scale *= 2;
             return;
         }
         if (keyMode && lowerRight == vkCode) {
             robot.mouseMove(p.x + scaleX / 2, p.y + scaleY / 2);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             addHistory();
             scale *= 2;
             return;
@@ -230,49 +230,49 @@ public class KeynavBak {
         // ctrl + left down up right
         if (keyMode && ctrlDown && left == vkCode) {
             robot.mouseMove(p.x - scaleX / 2, p.y);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             return;
         }
         if (keyMode && ctrlDown && down == vkCode) {
             robot.mouseMove(p.x, p.y + scaleY / 2);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             return;
         }
         if (keyMode && ctrlDown && up == vkCode) {
             robot.mouseMove(p.x, p.y - scaleY / 2);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             return;
         }
         if (keyMode && ctrlDown && right == vkCode) {
             robot.mouseMove(p.x + scaleX / 2, p.y);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             return;
         }
         // left down up right
         if (keyMode && left == vkCode) {
             robot.mouseMove(p.x - scaleX / 2, p.y);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             addHistory();
             scale *= 2;
             return;
         }
         if (keyMode && down == vkCode) {
             robot.mouseMove(p.x, p.y + scaleY / 2);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             addHistory();
             scale *= 2;
             return;
         }
         if (keyMode && up == vkCode) {
             robot.mouseMove(p.x, p.y - scaleY / 2);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             addHistory();
             scale *= 2;
             return;
         }
         if (keyMode && right == vkCode) {
             robot.mouseMove(p.x + scaleX / 2, p.y);
-            myPanel.paint(scale);
+            myPanel.paint(scale, false);
             addHistory();
             scale *= 2;
             return;

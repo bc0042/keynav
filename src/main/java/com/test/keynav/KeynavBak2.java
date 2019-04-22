@@ -13,11 +13,13 @@ import com.sun.jna.platform.win32.WinUser.MSG;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
+import java.util.LinkedList;
 
 /**
  * Sample implementation of a low-level keyboard hook on W32.
  */
-public class Keynav {
+@Deprecated
+public class KeynavBak2 {
     private static boolean ctrlDown = false;
     private static boolean scrollMode = false;
     private static HHOOK hhk;
@@ -25,8 +27,7 @@ public class Keynav {
     private static MyPanel myPanel;
     private static JFrame jFrame = new JFrame();
     private static Point[] savePoints = new Point[3];
-    private static MyQueue history;
-    private static MyQueue input;
+    private static LinkedList<Point> history = new LinkedList<>();
     private static int scale;
 
     private static final String LEFT = "left";
@@ -40,12 +41,10 @@ public class Keynav {
 
 
     public static void main(String[] args) throws AWTException {
-        input = new MyQueue(2);
-        history = new MyQueue(Config.getInt("historySize"));
         myPanel = new MyPanel();
         jFrame.add(myPanel);
         jFrame.setUndecorated(true);
-        jFrame.setOpacity(0.3f);
+        jFrame.setOpacity(0.2f);
         jFrame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         robot = new Robot();
         final User32 lib = User32.INSTANCE;
@@ -103,7 +102,7 @@ public class Keynav {
         if (ctrlDown && Config.equal("begin", vkCode)) { //begin
             scale = 1;
             robot.mouseMove(screenSize.width / 2, screenSize.height / 2);
-            myPanel.paint(scale, true);
+            myPanel.paint(scale, false);
             jFrame.setVisible(true);
             System.out.println("key mode on..");
             return;
@@ -112,38 +111,25 @@ public class Keynav {
             scale = 8;
             myPanel.paint(scale, false);
             jFrame.setVisible(true);
-            System.out.println("key mode on.. scale=" + scale);
+            System.out.println("key mode on.. scale="+scale);
             return;
         }
         if (Config.equal("esc", vkCode)) { //escape
             jFrame.setVisible(false);
             scrollMode = false;
-            input.clear();
             System.out.println("key mode off..");
             System.out.println("scroll mode off..");
             return;
         }
 
-        if (vkCode >= Config.getInt("key0") && vkCode <= Config.getInt("key9")) { // input numbers
-            input.add(vkCode - Config.getInt("key0"));
-            if (input.size() == 2) {
-                Point restore = (Point) MyPanel.locations.get(input.getFirst() + "" + input.getLast());
-                robot.mouseMove(restore.x, restore.y);
-                input.clear();
-                scale = 8;
-                myPanel.paint(scale, false);
-            }
-            return;
-        }
-
         if (keyMode && Config.equal("click", vkCode)) { //left click without escape
-            jFrame.setVisible(false);
+			jFrame.setVisible(false);
             robot.mousePress(InputEvent.BUTTON1_MASK);
-            robot.delay(300); // bug fixed
+			robot.delay(300); // bug fixed
             robot.mouseRelease(InputEvent.BUTTON1_MASK);
-            jFrame.setVisible(true);
+			jFrame.setVisible(true);
             return;
-        }
+		}
         if (keyMode && Config.equal("enter", vkCode)) { //left click
             jFrame.setVisible(false);
             robot.mousePress(InputEvent.BUTTON1_MASK);
@@ -229,13 +215,13 @@ public class Keynav {
         }
 
         if (keyMode && ctrlDown && Config.equal("back", vkCode)) { // move back
-            Point last = (Point) history.removeLast();
+            Point last = history.removeLast();
             history.addFirst(last);
             robot.mouseMove(last.x, last.y);
             return;
         }
         if (keyMode && ctrlDown && Config.equal("forward", vkCode)) { // move forward
-            Point first = (Point) history.removeFirst();
+            Point first = history.removeFirst();
             history.addLast(first);
             robot.mouseMove(first.x, first.y);
             return;
@@ -294,9 +280,15 @@ public class Keynav {
         }
         robot.mouseMove(x, y);
         myPanel.paint(scale, false);
-        p = MouseInfo.getPointerInfo().getLocation();
-        history.add(p);
+        addHistory();
     }
 
+    private static void addHistory() {
+        Point p = MouseInfo.getPointerInfo().getLocation();
+        if (history.size() >= Config.getInt("historyMax")) {
+            history.removeFirst();
+        }
+        history.add(p);
+    }
 
 }
