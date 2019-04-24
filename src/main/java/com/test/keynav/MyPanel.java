@@ -20,7 +20,7 @@ public class MyPanel extends JPanel {
         g.drawRect(x, y, w, h);
 
         if (beginning) {
-            int blockSize = 8;
+            int blockSize = Config.getInt("blockSize");
             int w2 = w / blockSize;
             int h2 = h / blockSize;
             for (int i = w2; i < w; i += w2) {

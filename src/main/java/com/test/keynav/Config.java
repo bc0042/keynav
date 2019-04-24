@@ -25,4 +25,8 @@ public class Config {
     public static int getInt(String key) {
         return Integer.parseInt(p.getProperty(key));
     }
+
+    public static float getFloat(String key) {
+        return Float.parseFloat(p.getProperty(key));
+    }
 }

@@ -20,6 +20,7 @@ import java.awt.event.InputEvent;
 public class Keynav {
     private static boolean ctrlDown = false;
     private static boolean scrollMode = false;
+    private static boolean moveMode = false;
     private static HHOOK hhk;
     private static Robot robot;
     private static MyPanel myPanel;
@@ -45,7 +46,7 @@ public class Keynav {
         myPanel = new MyPanel();
         jFrame.add(myPanel);
         jFrame.setUndecorated(true);
-        jFrame.setOpacity(0.3f);
+        jFrame.setOpacity(Config.getFloat("opacity"));
         jFrame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         robot = new Robot();
         final User32 lib = User32.INSTANCE;
@@ -105,6 +106,7 @@ public class Keynav {
             robot.mouseMove(screenSize.width / 2, screenSize.height / 2);
             myPanel.paint(scale, true);
             jFrame.setVisible(true);
+            input.clear();
             System.out.println("key mode on..");
             return;
         }
@@ -118,13 +120,13 @@ public class Keynav {
         if (Config.equal("esc", vkCode)) { //escape
             jFrame.setVisible(false);
             scrollMode = false;
+            moveMode = false;
             input.clear();
-            System.out.println("key mode off..");
-            System.out.println("scroll mode off..");
+            System.out.println("escape..");
             return;
         }
 
-        if (vkCode >= Config.getInt("key0") && vkCode <= Config.getInt("key9")) { // input numbers
+        if (keyMode && vkCode >= Config.getInt("key0") && vkCode <= Config.getInt("key9")) { // input numbers
             input.add(vkCode - Config.getInt("key0"));
             if (input.size() == 2) {
                 Point restore = (Point) MyPanel.locations.get(input.getFirst() + "" + input.getLast());
@@ -136,12 +138,11 @@ public class Keynav {
             return;
         }
 
-        if (keyMode && Config.equal("click", vkCode)) { //left click without escape
+        if ((keyMode || moveMode) && Config.equal("key_c", vkCode)) { //left click with delay
             jFrame.setVisible(false);
             robot.mousePress(InputEvent.BUTTON1_MASK);
-            robot.delay(300); // bug fixed
+            robot.delay(10); // bug fixed for some stupid software
             robot.mouseRelease(InputEvent.BUTTON1_MASK);
-            jFrame.setVisible(true);
             return;
         }
         if (keyMode && Config.equal("enter", vkCode)) { //left click
@@ -244,7 +245,7 @@ public class Keynav {
         if (keyMode && Config.equal("scrollDown", vkCode)) { // scroll on
             scrollMode = true;
             jFrame.setVisible(false);
-            System.out.println("scroll on..");
+            System.out.println("scroll mode on..");
             return;
         }
         if (scrollMode && Config.equal("scrollDown", vkCode)) { // scroll down
@@ -256,6 +257,32 @@ public class Keynav {
             return;
         }
 
+        if (ctrlDown && Config.equal("key_s", vkCode)) {
+            moveMode = true;
+            jFrame.setVisible(false);
+            System.out.println("move mode on..");
+            return;
+        }
+        if (moveMode && Config.equal("key_a", vkCode)) {
+            p = MouseInfo.getPointerInfo().getLocation();
+            robot.mouseMove(p.x - Config.getInt("mouseStep"), p.y);
+            return;
+        }
+        if (moveMode && Config.equal("key_s", vkCode)) {
+            p = MouseInfo.getPointerInfo().getLocation();
+            robot.mouseMove(p.x, p.y + Config.getInt("mouseStep"));
+            return;
+        }
+        if (moveMode && Config.equal("key_d", vkCode)) {
+            p = MouseInfo.getPointerInfo().getLocation();
+            robot.mouseMove(p.x + Config.getInt("mouseStep"), p.y);
+            return;
+        }
+        if (moveMode && Config.equal("key_w", vkCode)) {
+            p = MouseInfo.getPointerInfo().getLocation();
+            robot.mouseMove(p.x, p.y - Config.getInt("mouseStep"));
+            return;
+        }
     }
 
     private static void move(String flag) {
