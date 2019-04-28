@@ -138,7 +138,7 @@ public class Keynav {
             return;
         }
 
-        if ((keyMode || moveMode) && Config.equal("key_c", vkCode)) { //left click with delay
+        if ((keyMode || moveMode) && Config.equal("key_e", vkCode)) { //left click with delay
             jFrame.setVisible(false);
             robot.mousePress(InputEvent.BUTTON1_MASK);
             robot.delay(10); // bug fixed for some stupid software
@@ -257,7 +257,7 @@ public class Keynav {
             return;
         }
 
-        if (ctrlDown && Config.equal("key_s", vkCode)) {
+        if (ctrlDown && Config.equal("key_d", vkCode)) {
             moveMode = true;
             jFrame.setVisible(false);
             System.out.println("move mode on..");
