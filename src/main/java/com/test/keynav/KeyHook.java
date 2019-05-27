@@ -131,15 +131,15 @@ public class KeyHook {
             savePoints.add(p);
             System.out.println("save3..");
         }
-        if (keyMode && 49 == vkCode) { // resotre1
+        if (keyMode && 49 == vkCode) { // restore1
             Point point = savePoints.get(0);
             robot.mouseMove(point.x, point.y);
         }
-        if (keyMode && 50 == vkCode) { // resotre2
+        if (keyMode && 50 == vkCode) { // restore2
             Point point = savePoints.get(0);
             robot.mouseMove(point.x, point.y);
         }
-        if (keyMode && 51 == vkCode) { // resotre3
+        if (keyMode && 51 == vkCode) { // restore3
             Point point = savePoints.get(0);
             robot.mouseMove(point.x, point.y);
         }

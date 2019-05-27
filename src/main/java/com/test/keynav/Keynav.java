@@ -19,13 +19,14 @@ import java.awt.event.InputEvent;
  */
 public class Keynav {
     private static boolean ctrlDown = false;
+    private static boolean altDown = false;
     private static boolean scrollMode = false;
     private static boolean moveMode = false;
     private static HHOOK hhk;
     private static Robot robot;
     private static MyPanel myPanel;
     private static JFrame jFrame = new JFrame();
-    private static Point[] savePoints = new Point[3];
+    private static Point[] savePoints = new Point[2];
     private static MyQueue history;
     private static MyQueue input;
     private static int scale;
@@ -86,6 +87,9 @@ public class Keynav {
     }
 
     private static void keyUp(int vkCode) {
+        if (Config.equal("alt", vkCode)) {
+            altDown = false;
+        }
         if (Config.equal("ctrl", vkCode)) {
             ctrlDown = false;
         }
@@ -97,6 +101,10 @@ public class Keynav {
         boolean keyMode = jFrame.isVisible();
         System.out.println("key code: " + vkCode);
 
+        if (Config.equal("alt", vkCode)) {
+            altDown = true;
+            return;
+        }
         if (Config.equal("ctrl", vkCode)) {
             ctrlDown = true;
             return;
@@ -152,46 +160,34 @@ public class Keynav {
             System.out.println("key mode off..");
             return;
         }
-        if (keyMode && Config.equal("space", vkCode)) { //right click
+        if ((keyMode || moveMode) && Config.equal("key_q", vkCode)) { //right click
             jFrame.setVisible(false);
             robot.mousePress(InputEvent.BUTTON3_MASK);
             robot.mouseRelease(InputEvent.BUTTON3_MASK);
             return;
         }
-        if (keyMode && ctrlDown && Config.equal("key1", vkCode)) { // save1
+        if (ctrlDown && altDown && Config.equal("key1", vkCode)) { // restore1
+            Point point = savePoints[0];
+            if (point != null) {
+                robot.mouseMove(point.x, point.y);
+            }
+            return;
+        }
+        if (ctrlDown && altDown && Config.equal("key2", vkCode)) { // restore2
+            Point point = savePoints[1];
+            if (point != null) {
+                robot.mouseMove(point.x, point.y);
+            }
+            return;
+        }
+        if (ctrlDown && Config.equal("key1", vkCode)) { // save1
             savePoints[0] = p;
-            System.out.println("key1..");
+            System.out.println("save1..");
             return;
         }
-        if (keyMode && ctrlDown && Config.equal("key2", vkCode)) { // save2
+        if (ctrlDown && Config.equal("key2", vkCode)) { // save2
             savePoints[1] = p;
-            System.out.println("key2..");
-            return;
-        }
-        if (keyMode && ctrlDown && Config.equal("key3", vkCode)) { // save3
-            savePoints[2] = p;
-            System.out.println("key3..");
-            return;
-        }
-        if (keyMode && Config.equal("key1", vkCode)) { // restore1
-            Point point = savePoints[0];
-            if (point != null) {
-                robot.mouseMove(point.x, point.y);
-            }
-            return;
-        }
-        if (keyMode && Config.equal("key2", vkCode)) { // restore2
-            Point point = savePoints[0];
-            if (point != null) {
-                robot.mouseMove(point.x, point.y);
-            }
-            return;
-        }
-        if (keyMode && Config.equal("key3", vkCode)) { // restore3
-            Point point = savePoints[0];
-            if (point != null) {
-                robot.mouseMove(point.x, point.y);
-            }
+            System.out.println("save2..");
             return;
         }
 
@@ -242,9 +238,8 @@ public class Keynav {
             return;
         }
 
-        if (keyMode && Config.equal("scrollDown", vkCode)) { // scroll on
+        if (ctrlDown && Config.equal("scrollDown", vkCode)) { // scroll on
             scrollMode = true;
-            jFrame.setVisible(false);
             System.out.println("scroll mode on..");
             return;
         }
@@ -257,7 +252,7 @@ public class Keynav {
             return;
         }
 
-        if (ctrlDown && Config.equal("key_d", vkCode)) {
+        if (keyMode && Config.equal("key_w", vkCode)) {
             moveMode = true;
             jFrame.setVisible(false);
             System.out.println("move mode on..");
