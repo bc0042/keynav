@@ -20,9 +20,10 @@ public class MyPanel extends JPanel {
         g.drawRect(x, y, w, h);
 
         if (beginning) {
-            int blockSize = Config.getInt("blockSize");
-            int w2 = w / blockSize;
-            int h2 = h / blockSize;
+            int blocksX = Config.getInt("blocksX");
+            int blocksY = Config.getInt("blocksY");
+            int w2 = w / blocksX;
+            int h2 = h / blocksY;
             for (int i = w2; i < w; i += w2) {
                 g.drawLine(i, 0, i, h);
             }
@@ -30,13 +31,13 @@ public class MyPanel extends JPanel {
                 g.drawLine(0, j, w, j);
             }
             int startNum = 10;
-            g.setFont(new Font(null, 0, blockSize * 3));
-            for (int i = 0; i < blockSize; i++) {
-                for (int j = 0; j < blockSize; j++) {
-                    int n = startNum + j * blockSize + i;
+            g.setFont(new Font(null, 0, blocksX * 3));
+            for (int i = 0; i < blocksX; i++) {
+                for (int j = 0; j < blocksY; j++) {
+                    int n = startNum + j * blocksX + i;
                     String str = n + "";
-                    int x1 = w / blockSize / 2 + i * w2;
-                    int y1 = h / blockSize / 2 + j * h2;
+                    int x1 = w2 / 2 + i * w2;
+                    int y1 = h2 / 2 + j * h2;
                     g.drawString(str, x1, y1);
                     locations.put(str, new Point(x1, y1));
                 }
@@ -49,10 +50,9 @@ public class MyPanel extends JPanel {
 
     public void paint(int scale, boolean beginning) {
         this.beginning = beginning;
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Point p = MouseInfo.getPointerInfo().getLocation();
-        int scaleX = screenSize.width / scale;
-        int scaleY = screenSize.height / scale;
+        int scaleX = MyDevice.width / scale;
+        int scaleY = MyDevice.height / scale;
         this.x = p.x - scaleX / 2;
         this.y = p.y - scaleY / 2;
         this.w = scaleX;
